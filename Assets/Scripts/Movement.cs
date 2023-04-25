@@ -1,0 +1,67 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+
+public enum Speeds { Slow = 0, Normal = 1, Fast = 2, Faster = 3, Fastest = 4 };
+public enum GameModes { Cube = 0, Ship = 1 };
+public enum Gravity { Upright = 1, Upsidedown = -1 };
+public class Movement : MonoBehaviour
+{
+    [SerializeField] Speeds currentSpeed;
+    [SerializeField] GameModes currentGameMode;
+    float[] speedValues = { 8.6f, 10.4f, 12.96f, 15.6f, 19.27f };
+
+    BoxCollider2D myCollider;
+    Rigidbody2D rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        myCollider = GetComponent<BoxCollider2D>();
+    }
+
+    void Update()
+    {
+        transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
+
+        if (!myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        {
+            transform.Rotate(Vector3.back);
+        }
+    }
+
+    void OnJump(InputValue value)
+    {
+        if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        {
+            //Try to make block land on a side all the time 
+            Vector3 Rotation = transform.rotation.eulerAngles;
+            Rotation.z = Mathf.Round(Rotation.z / 90) * 90;
+            transform.rotation = Quaternion.Euler(Rotation);
+
+            if (value.isPressed)
+            {
+                rb.velocity = Vector2.zero;
+                rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
+            }
+        }
+    }
+
+    public void ChangeThroughPortal(GameModes gameModes, Speeds speed, Gravity gravity, int State)
+    {
+        switch (State)
+        {
+            case 0:
+                currentSpeed = speed;
+                break;
+            case 1:
+                currentGameMode = gameModes;
+                break;
+            case 2:
+                rb.gravityScale = Mathf.Abs(rb.gravityScale) * (int)gravity;
+                break;
+        }
+    }
+}
