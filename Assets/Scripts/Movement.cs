@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 
 public enum Speeds { Slow = 0, Normal = 1, Fast = 2, Faster = 3, Fastest = 4 };
 public enum GameModes { Cube = 0, Ship = 1 };
-public enum Gravity { Upright = 1, Upsidedown = -1 };
 public class Movement : MonoBehaviour
 {
     [SerializeField] Speeds currentSpeed;
@@ -25,31 +24,64 @@ public class Movement : MonoBehaviour
     void Update()
     {
         transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
+        Invoke(currentGameMode.ToString(), 0);
 
-        if (!myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        if (rb.velocity.y < -24.2f)
         {
-            transform.Rotate(Vector3.back);
+            rb.velocity = new Vector2(rb.velocity.y, -24.2f);
         }
+
     }
 
     void OnJump(InputValue value)
     {
+
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
-            //Try to make block land on a side all the time 
-            Vector3 Rotation = transform.rotation.eulerAngles;
-            Rotation.z = Mathf.Round(Rotation.z / 90) * 90;
-            transform.rotation = Quaternion.Euler(Rotation);
-
             if (value.isPressed)
             {
                 rb.velocity = Vector2.zero;
                 rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
             }
         }
+
+        if (myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")))
+        {
+            if (value.isPressed)
+            {
+                rb.velocity = Vector2.zero;
+                rb.AddForce(Vector2.down * 26.65f, ForceMode2D.Impulse);
+            }
+        }
+
+
     }
 
-    public void ChangeThroughPortal(GameModes gameModes, Speeds speed, Gravity gravity, int State)
+    void Cube()
+    {
+        if (!myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")) && !myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")))
+        {
+            transform.Rotate(Vector3.back, 452.415f * Time.deltaTime);
+        }
+        else
+        {
+            Vector3 Rotation = transform.rotation.eulerAngles;
+            Rotation.z = Mathf.Round(Rotation.z / 90) * 90;
+            transform.rotation = Quaternion.Euler(Rotation);
+        }
+    }
+    void Ship()
+    {
+
+    }
+
+    //bool TouchingWall()
+    //{
+    //  return Physics2D.OverlapBox((Vector2)transform.position + (Vector2.right * 0.55f),
+    //  Vector2.up * 0.8f + (Vector2.right * GroundCheckRadius), 0, GroundMask);
+    //}
+
+    public void ChangeThroughPortal(GameModes gameModes, Speeds speed, int gravity, int State)
     {
         switch (State)
         {
