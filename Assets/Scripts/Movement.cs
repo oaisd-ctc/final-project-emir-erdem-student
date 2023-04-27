@@ -10,6 +10,7 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] Speeds currentSpeed;
     [SerializeField] GameModes currentGameMode;
+    bool upsideDown;
     float[] speedValues = { 8.6f, 10.4f, 12.96f, 15.6f, 19.27f };
 
     BoxCollider2D myCollider;
@@ -38,6 +39,7 @@ public class Movement : MonoBehaviour
 
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
+            upsideDown = false;
             if (value.isPressed)
             {
                 rb.velocity = Vector2.zero;
@@ -47,6 +49,7 @@ public class Movement : MonoBehaviour
 
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")))
         {
+            upsideDown = true;
             if (value.isPressed)
             {
                 rb.velocity = Vector2.zero;
@@ -61,7 +64,14 @@ public class Movement : MonoBehaviour
     {
         if (!myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")) && !myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")))
         {
-            transform.Rotate(Vector3.back, 452.415f * Time.deltaTime);
+            if (upsideDown == false)
+            {
+                transform.Rotate(Vector3.back, 452.415f * Time.deltaTime);
+            }
+            else
+            {
+                transform.Rotate(Vector3.forward, 452.415f * Time.deltaTime);
+            }
         }
         else
         {
