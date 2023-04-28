@@ -10,6 +10,10 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] Speeds currentSpeed;
     [SerializeField] GameModes currentGameMode;
+
+    public float GroundCheckRadius;
+    public LayerMask GroundMask;
+
     bool upsideDown;
     float[] speedValues = { 8.6f, 10.4f, 12.96f, 15.6f, 19.27f };
 
@@ -80,16 +84,11 @@ public class Movement : MonoBehaviour
             transform.rotation = Quaternion.Euler(Rotation);
         }
     }
-    void Ship()
+    bool TouchingWall()
     {
-
+        return Physics2D.OverlapBox((Vector2)transform.position + (Vector2.right * 0.55f),
+        Vector2.up * 0.8f + (Vector2.right * GroundCheckRadius), 0, GroundMask);
     }
-
-    //bool TouchingWall()
-    //{
-    //  return Physics2D.OverlapBox((Vector2)transform.position + (Vector2.right * 0.55f),
-    //  Vector2.up * 0.8f + (Vector2.right * GroundCheckRadius), 0, GroundMask);
-    //}
 
     public void ChangeThroughPortal(GameModes gameModes, Speeds speed, int gravity, int State)
     {
