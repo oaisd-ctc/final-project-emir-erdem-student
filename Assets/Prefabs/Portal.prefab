@@ -98,8 +98,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91b5d62e8cc881849ae795de905c4ace, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameMode: 1
-  speed: 2
+  gameMode: 0
+  speed: 1
   gravity: 0
   state: 2
 --- !u!68 &1658433565895148169

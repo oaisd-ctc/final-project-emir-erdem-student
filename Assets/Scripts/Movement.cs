@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 
 public enum Speeds { Slow = 0, Normal = 1, Fast = 2, Faster = 3, Fastest = 4 };
@@ -36,6 +37,7 @@ public class Movement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.y, -24.2f);
         }
 
+        Die();
     }
 
     void OnJump(InputValue value)
@@ -88,6 +90,24 @@ public class Movement : MonoBehaviour
     {
         return Physics2D.OverlapBox((Vector2)transform.position + (Vector2.right * 0.55f),
         Vector2.up * 0.8f + (Vector2.right * GroundCheckRadius), 0, GroundMask);
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "BoxEdge")
+        {
+            Destroy(gameObject);
+            SceneManager.LoadScene(0);
+        }
+    }
+
+    void Die()
+    {
+        if (myCollider.IsTouchingLayers(LayerMask.GetMask("Danger")))
+        {
+            Destroy(gameObject);
+            SceneManager.LoadScene(0);
+        }
     }
 
     public void ChangeThroughPortal(GameModes gameModes, Speeds speed, int gravity, int State)
