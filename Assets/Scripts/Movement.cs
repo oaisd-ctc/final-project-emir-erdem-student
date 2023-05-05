@@ -97,7 +97,8 @@ public class Movement : MonoBehaviour
         if (collision.gameObject.tag == "BoxEdge")
         {
             Destroy(gameObject);
-            SceneManager.LoadScene(0);
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            SceneManager.LoadScene(currentSceneIndex);
         }
     }
 
@@ -106,7 +107,8 @@ public class Movement : MonoBehaviour
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Danger")))
         {
             Destroy(gameObject);
-            SceneManager.LoadScene(0);
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            SceneManager.LoadScene(currentSceneIndex);
         }
     }
 
