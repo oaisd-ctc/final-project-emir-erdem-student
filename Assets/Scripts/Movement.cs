@@ -86,11 +86,7 @@ public class Movement : MonoBehaviour
             transform.rotation = Quaternion.Euler(Rotation);
         }
     }
-    bool TouchingWall()
-    {
-        return Physics2D.OverlapBox((Vector2)transform.position + (Vector2.right * 0.55f),
-        Vector2.up * 0.8f + (Vector2.right * GroundCheckRadius), 0, GroundMask);
-    }
+
 
     void OnTriggerEnter2D(Collider2D collision)
     {
