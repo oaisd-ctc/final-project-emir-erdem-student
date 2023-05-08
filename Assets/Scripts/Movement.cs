@@ -11,25 +11,36 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] Speeds currentSpeed;
     [SerializeField] GameModes currentGameMode;
+    [SerializeField] AudioClip deathSound;
 
     public float GroundCheckRadius;
     public LayerMask GroundMask;
 
     bool upsideDown;
     float[] speedValues = { 8.6f, 10.4f, 12.96f, 15.6f, 19.27f };
+    int currentSceneIndex;
 
     BoxCollider2D myCollider;
     Rigidbody2D rb;
+    bool dead;
 
     void Start()
     {
+        currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         rb = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<BoxCollider2D>();
     }
 
     void Update()
     {
-        transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
+        if (!dead)
+        {
+            transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
+        }
+        else
+        {
+            transform.position += Vector3.left * 0.1f * Time.deltaTime;
+        }
         Invoke(currentGameMode.ToString(), 0);
 
         if (rb.velocity.y < -24.2f)
@@ -43,24 +54,18 @@ public class Movement : MonoBehaviour
     void OnJump(InputValue value)
     {
 
-        if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
+        if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")) && value.isPressed)
         {
             upsideDown = false;
-            if (value.isPressed)
-            {
-                rb.velocity = Vector2.zero;
-                rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
-            }
+            rb.velocity = Vector2.zero;
+            rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
         }
 
-        if (myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")))
+        else if (myCollider.IsTouchingLayers(LayerMask.GetMask("UpSideDown")) && value.isPressed)
         {
             upsideDown = true;
-            if (value.isPressed)
-            {
-                rb.velocity = Vector2.zero;
-                rb.AddForce(Vector2.down * 26.65f, ForceMode2D.Impulse);
-            }
+            rb.velocity = Vector2.zero;
+            rb.AddForce(Vector2.down * 30.65f, ForceMode2D.Impulse);
         }
 
 
@@ -92,9 +97,11 @@ public class Movement : MonoBehaviour
     {
         if (collision.gameObject.tag == "BoxEdge")
         {
-            Destroy(gameObject);
-            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentSceneIndex);
+            dead = true;
+            AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position);
+
+            StartCoroutine(WaitDeath());
+
         }
     }
 
@@ -102,10 +109,21 @@ public class Movement : MonoBehaviour
     {
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Danger")))
         {
-            Destroy(gameObject);
-            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentSceneIndex);
+            dead = true;
+            AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position);
+
+            StartCoroutine(WaitDeath());
+
         }
+    }
+
+    IEnumerator WaitDeath()
+    {
+        dead = true;
+        yield return new WaitForSeconds(0.25f);
+        Destroy(gameObject);
+        SceneManager.LoadScene(currentSceneIndex);
+
     }
 
     public void ChangeThroughPortal(GameModes gameModes, Speeds speed, int gravity, int State)
