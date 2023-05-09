@@ -11,36 +11,28 @@ public class Movement : MonoBehaviour
 {
     [SerializeField] Speeds currentSpeed;
     [SerializeField] GameModes currentGameMode;
-    [SerializeField] AudioClip deathSound;
+    [SerializeField] AudioClip jump;
+    [SerializeField] AudioClip portalSFX;
 
     public float GroundCheckRadius;
     public LayerMask GroundMask;
 
     bool upsideDown;
     float[] speedValues = { 8.6f, 10.4f, 12.96f, 15.6f, 19.27f };
-    int currentSceneIndex;
 
     BoxCollider2D myCollider;
     Rigidbody2D rb;
-    bool dead;
 
     void Start()
     {
-        currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
         rb = GetComponent<Rigidbody2D>();
         myCollider = GetComponent<BoxCollider2D>();
     }
 
     void Update()
     {
-        if (!dead)
-        {
-            transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
-        }
-        else
-        {
-            transform.position += Vector3.left * 0.1f * Time.deltaTime;
-        }
+        transform.position += Vector3.right * speedValues[(int)currentSpeed] * Time.deltaTime;
+
         Invoke(currentGameMode.ToString(), 0);
 
         if (rb.velocity.y < -24.2f)
@@ -51,13 +43,14 @@ public class Movement : MonoBehaviour
         Die();
     }
 
-    void OnJump(InputValue value)
+    public void OnJump(InputValue value)
     {
 
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Ground")) && value.isPressed)
         {
             upsideDown = false;
             rb.velocity = Vector2.zero;
+            AudioSource.PlayClipAtPoint(jump, Camera.main.transform.position, 0.03f);
             rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
         }
 
@@ -65,6 +58,7 @@ public class Movement : MonoBehaviour
         {
             upsideDown = true;
             rb.velocity = Vector2.zero;
+            AudioSource.PlayClipAtPoint(jump, Camera.main.transform.position, 0.03f);
             rb.AddForce(Vector2.down * 30.65f, ForceMode2D.Impulse);
         }
 
@@ -77,10 +71,12 @@ public class Movement : MonoBehaviour
         {
             if (upsideDown == false)
             {
+
                 transform.Rotate(Vector3.back, 452.415f * Time.deltaTime);
             }
             else
             {
+
                 transform.Rotate(Vector3.forward, 452.415f * Time.deltaTime);
             }
         }
@@ -97,11 +93,15 @@ public class Movement : MonoBehaviour
     {
         if (collision.gameObject.tag == "BoxEdge")
         {
-            dead = true;
-            AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position);
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            Destroy(gameObject);
+            SceneManager.LoadScene(currentSceneIndex);
 
-            StartCoroutine(WaitDeath());
+        }
 
+        if (collision.gameObject.tag == "Portal")
+        {
+            AudioSource.PlayClipAtPoint(portalSFX, Camera.main.transform.position, 0.03f);
         }
     }
 
@@ -109,21 +109,11 @@ public class Movement : MonoBehaviour
     {
         if (myCollider.IsTouchingLayers(LayerMask.GetMask("Danger")))
         {
-            dead = true;
-            AudioSource.PlayClipAtPoint(deathSound, Camera.main.transform.position);
-
-            StartCoroutine(WaitDeath());
+            int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+            Destroy(gameObject);
+            SceneManager.LoadScene(currentSceneIndex);
 
         }
-    }
-
-    IEnumerator WaitDeath()
-    {
-        dead = true;
-        yield return new WaitForSeconds(0.25f);
-        Destroy(gameObject);
-        SceneManager.LoadScene(currentSceneIndex);
-
     }
 
     public void ChangeThroughPortal(GameModes gameModes, Speeds speed, int gravity, int State)

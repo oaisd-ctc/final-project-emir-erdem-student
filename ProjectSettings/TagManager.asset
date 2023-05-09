@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - BoxEdge
+  - Portal
   layers:
   - Default
   - TransparentFX
