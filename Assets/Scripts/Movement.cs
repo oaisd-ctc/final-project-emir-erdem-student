@@ -103,6 +103,11 @@ public class Movement : MonoBehaviour
         {
             AudioSource.PlayClipAtPoint(portalSFX, gameObject.transform.position, 0.30f);
         }
+
+        if (collision.gameObject.tag == "EndGame")
+        {
+            SceneManager.LoadScene("End Game");
+        }
     }
 
     void Die()

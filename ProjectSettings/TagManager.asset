@@ -6,6 +6,7 @@ TagManager:
   tags:
   - BoxEdge
   - Portal
+  - EndGame
   layers:
   - Default
   - TransparentFX
