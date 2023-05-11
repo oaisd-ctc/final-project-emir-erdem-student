@@ -50,7 +50,7 @@ public class Movement : MonoBehaviour
         {
             upsideDown = false;
             rb.velocity = Vector2.zero;
-            AudioSource.PlayClipAtPoint(jump, gameObject.transform.position, 0.25f);
+            AudioSource.PlayClipAtPoint(jump, gameObject.transform.position, 0.6f);
             rb.AddForce(Vector2.up * 26.65f, ForceMode2D.Impulse);
         }
 
@@ -58,7 +58,7 @@ public class Movement : MonoBehaviour
         {
             upsideDown = true;
             rb.velocity = Vector2.zero;
-            AudioSource.PlayClipAtPoint(jump, gameObject.transform.position, 0.25f);
+            AudioSource.PlayClipAtPoint(jump, gameObject.transform.position, 0.6f);
             rb.AddForce(Vector2.down * 30.65f, ForceMode2D.Impulse);
         }
 
@@ -101,7 +101,7 @@ public class Movement : MonoBehaviour
 
         if (collision.gameObject.tag == "Portal")
         {
-            AudioSource.PlayClipAtPoint(portalSFX, gameObject.transform.position, 0.30f);
+            AudioSource.PlayClipAtPoint(portalSFX, gameObject.transform.position, 6f);
         }
 
         if (collision.gameObject.tag == "EndGame")
